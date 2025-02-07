@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMEL | Site oficial</title>
+</head>
+<body>
+    <header>
+        <h1>CMEL - Certificação de Marcas e Empresas do Lycée</h1>
+    </header>
+
+    <main>
+        <label for="opcoes">Escolha uma opção:</label>
+        <select id="opcoes" name="opcoes" onchange="atualizarTela()">
+            <option value="1">Encontrar o código CMEL</option>
+            <option value="2">Encontrar o nome da marca ou empresa</option>
+        </select>
+
+        <div id="conteudo" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc;">
+            Selecione uma opção para exibir o conteúdo.
+        </div>
+    </main>
+
+    <script>
+        // Banco de dados dos códigos CMEL e nomes das empresas
+        const empresas = {
+            "prime": "050220250101250001",
+            "empresa bob©": "30092023041020230002"
+        };
+
+        const codigosCMEL = {
+            "050220250101250001": "PRIME",
+            "30092023041020230002": "Empresa BOB©"
+        };
+
+        function atualizarTela() {
+            let opcao = document.getElementById("opcoes").value;
+            let conteudo = document.getElementById("conteudo");
+
+            if (opcao === "1") {
+                conteudo.innerHTML = `
+                    <h3>Encontrar o código CMEL</h3>
+                    <p>Digite o nome da marca ou empresa para encontrar o código CMEL.</p>
+                    <input id="enccmel" type="text" list="sugestoes-nomes" oninput="atualizarSugestoes(1)" onkeypress="verificarEnter(event, 1)" />
+                    <datalist id="sugestoes-nomes"></datalist>
+                    <p id="resultado"></p>
+                `;
+            } else if (opcao === "2") {
+                conteudo.innerHTML = `
+                    <h3>Encontrar o nome da marca ou empresa</h3>
+                    <p>Digite o código CMEL para encontrar o nome da marca ou empresa.</p>
+                    <input id="encnome" type="text" list="sugestoes-codigos" oninput="atualizarSugestoes(2)" onkeypress="verificarEnter(event, 2)" />
+                    <datalist id="sugestoes-codigos"></datalist>
+                    <p id="resultado"></p>
+                `;
+            }
+        }
+
+        function atualizarSugestoes(tipo) {
+            let input, datalist, valores;
+
+            if (tipo === 1) {
+                input = document.getElementById("enccmel");
+                datalist = document.getElementById("sugestoes-nomes");
+                valores = Object.keys(empresas); // Pega os nomes das empresas
+            } else {
+                input = document.getElementById("encnome");
+                datalist = document.getElementById("sugestoes-codigos");
+                valores = Object.keys(codigosCMEL); // Pega os códigos CMEL
+            }
+
+            datalist.innerHTML = ""; // Limpa sugestões antigas
+            let textoDigitado = input.value.toLowerCase();
+
+            valores.forEach(valor => {
+                if (valor.toLowerCase().includes(textoDigitado)) {
+                    let option = document.createElement("option");
+                    option.value = valor;
+                    datalist.appendChild(option);
+                }
+            });
+        }
+
+        function verificarEnter(event, tipo) {
+            if (event.key === "Enter") {
+                let resultado = document.getElementById("resultado");
+
+                if (tipo === 1) { // Encontrar Código CMEL
+                    let valor = document.getElementById("enccmel").value.trim().toLowerCase();
+                    if (empresas[valor]) {
+                        resultado.innerHTML = `Código CMEL: <strong>${empresas[valor]}</strong>`;
+                    } else {
+                        resultado.innerHTML = "<span style='color:red;'>Empresa não encontrada.</span>";
+                    }
+                } else if (tipo === 2) { // Encontrar Nome da Empresa
+                    let valor = document.getElementById("encnome").value.trim();
+                    if (codigosCMEL[valor]) {
+                        resultado.innerHTML = `Nome da Empresa: <strong>${codigosCMEL[valor]}</strong>`;
+                    } else {
+                        resultado.innerHTML = "<span style='color:red;'>Código CMEL não encontrado.</span>";
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
